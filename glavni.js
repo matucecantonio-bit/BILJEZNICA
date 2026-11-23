@@ -1,6 +1,9 @@
 
 import { ucitajZadatke, spremiZadatke } from './pohrana.js';
 
+const APP_NAME = "Konzolna bilježnica";
+console.log(`== ${APP_NAME} ==`);
+
 const naredba = process.argv[2];
 const argument = process.argv[3];
 
@@ -10,7 +13,6 @@ async function pokreni() {
 
         switch (naredba) {
 
-            // Dodavanje zadatka
             case 'dodaj': {
                 if (!argument) {
                     throw new Error('Upisite naziv zadatka!');
@@ -29,7 +31,6 @@ async function pokreni() {
                 break;
             }
 
-            // Ispis zadataka
             case 'popis': {
                 if (zadaci.length === 0) {
                     console.log('Nema zadataka.');
@@ -42,7 +43,6 @@ async function pokreni() {
                 break;
             }
 
-            // Oznacavanje zadatka kao gotovog
             case 'gotovo': {
                 const z = zadaci.find(z => z.id === Number(argument));
 
