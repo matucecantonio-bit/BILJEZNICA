@@ -1,0 +1,9 @@
+{
+  "name": "nodejs-a",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node glavni.js",
+    "dev": "node glavni.js"
+  }
+}
