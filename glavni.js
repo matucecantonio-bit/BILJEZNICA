@@ -1,70 +1,69 @@
-
-import { ucitajZadatke, spremiZadatke } from './pohrana.js';
+import { ucitajZadatke, spremiZadatke } from "./pohrana.js";
 
 const APP_NAME = "Konzolna bilježnica";
 console.log(`== ${APP_NAME} ==`);
 
-const naredba = process.argv[2];
-const argument = process.argv[3];
+const [naredba, argument] = process.argv.slice(2);
 
-async function pokreni() {
-    try {
-        const zadaci = await ucitajZadatke();
+try {
+  const zadaci = await ucitajZadatke();
 
-        switch (naredba) {
-
-            case 'dodaj': {
-                if (!argument) {
-                    throw new Error('Upisite naziv zadatka!');
-                }
-
-                const id = zadaci.length + 1;
-
-                zadaci.push({
-                    id: id,
-                    naslov: process.argv.slice(3).join(' '),
-                    gotovo: false
-                });
-
-                await spremiZadatke(zadaci);
-                console.log('Zadatak je dodan!');
-                break;
-            }
-
-            case 'popis': {
-                if (zadaci.length === 0) {
-                    console.log('Nema zadataka.');
-                }
-
-                for (const z of zadaci) {
-                    console.log(`${z.id}. [${z.gotovo ? 'x' : ' '}] ${z.naslov}`);
-                }
-
-                break;
-            }
-
-            case 'gotovo': {
-                const z = zadaci.find(z => z.id === Number(argument));
-
-                if (!z || !/^[1-9]\d*$/.test(argument || '')) {
-                    throw new Error('Zadatak ne postoji!');
-                }
-
-                z.gotovo = true;
-
-                await spremiZadatke(zadaci);
-                console.log('Zadatak je gotov!');
-                break;
-            }
-
-            default:
-                throw new Error('Nepoznata naredba!');
-        }
-
-    } catch (greska) {
-        console.log('Greska: ' + greska.message);
+  switch (naredba) {
+    case "dodaj": {
+      if (!argument || !argument.trim() === "") {
+        console.error("Nedostaje naslov zadatka.");
         process.exit(1);
-    }
-}
+      }
 
-pokreni();
+     let noviId = 1;
+    if (zadaci.length > 0) {
+      noviId = Math.max(...zadaci.map((z) => z.id)) + 1;
+    }
+
+    const noviZadatak = {
+      id: noviId,
+      naslov: argument.trim(),
+      gotovo: false,
+    };
+
+    zadaci.push(noviZadatak);
+    await spremiZadatke(zadaci);
+
+    console.log(`Dodan zadatak [${noviId}]: ${noviZadatak.naslov}`);
+    break;
+    }
+
+    case "popis":
+      if (zadaci.length === 0) {
+        console.log("Nema zadataka.");
+      } else {
+        zadaci.forEach(z =>
+          console.log(`${z.id}. ${z.gotovo ? "[x]" : "[ ]"} ${z.naslov}`)
+        );
+      }
+      break;
+
+    case "gotovo": {
+      const id = Number(argument);
+      const zadatak = zadaci.find(z => z.id === id);
+
+      if (!argument || !Number.isInteger(id) || id <= 0 || !zadatak) {
+        console.error("Neispravan broj zadatka.");
+        process.exit(1);
+      }
+
+      zadatak.gotovo = true;
+      await spremiZadatke(zadaci);
+
+      console.log(`Zadatak ${id} označen kao gotov.`);
+      break;
+    }
+
+    default:
+      console.error("Nepoznata naredba. Koristi: dodaj, popis, gotovo.");
+      process.exit(1);
+  }
+} catch (error) {
+  console.error("Greška:", error.message);
+  process.exit(1);
+}
