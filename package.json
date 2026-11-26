@@ -1,9 +1,8 @@
 {
-  "name": "nodejs-a",
+  "name": "konzolna biljeznica",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "start": "node glavni.js",
-    "dev": "node glavni.js"
   }
 }
